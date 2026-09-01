@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_bk_sales_order_list" model="ir.actions.act_window">
+        <field name="name">Sales Batches</field>
+        <field name="res_model">bk.sales.order</field>
+        <field name="view_mode">list,form</field>
+<!--        <field name="groups_id" eval="[(4, ref('bk_sales_bridge.group_bk_sales_user'))]"/>-->
+    </record>
+
+    <!-- NOTE: Add list and form view definitions here -->
+
+    <record id="view_bk_sales_order_list" model="ir.ui.view">
+        <field name="name">Sales Batches - list</field>
+        <field name="model">bk.sales.order</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="pos_source_id"/>
+                <field name="start_date"/>
+                <field name="end_date"/>
+                <field name="state"/>
+                <field name="total_sales"/>
+                <field name="margin_pct"/>
+                <field name="flagged_line_count"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_bk_sales_order_form" model="ir.ui.view">
+        <field name="name">Sales Batches - Form</field>
+        <field name="model">bk.sales.order</field>
+        <field name="arch" type="xml">
+            <form>
+            <header>
+
+                <!-- Generate -->
+                <button
+                    name="action_generate_summary" type="object" icon="fa-list-alt"
+                    string="Generate Summary"  class="btn-primary"   invisible="state != 'draft'" />
+
+                <button
+                    name="action_rebuild_summary" type="object" string="Rebuild Summary"
+                    class="btn-secondary" invisible="state not in ('draft','review')" />
+
+                    <button
+                        name="action_refresh_products"  type="object" string="Map Products"
+                        class="btn-success"
+                        icon="fa-search"    invisible="state not in ('draft', 'review')"
+                    />
+                <!-- Validate -->
+                <button
+                    name="action_validate" type="object"
+                    string="Validate" class="btn-warning" invisible="state != 'review'"/>
+
+                <!-- Reset -->
+                <button
+                    name="action_reset_to_review"
+                    type="object" string="Reset to Review"
+                    class="btn-secondary"  invisible="state != 'validated'"/>
+
+                <!-- Post -->
+                <button
+                    name="action_post_to_sale"   type="object" string="Post to Sales"
+                    class="btn-primary" invisible="state != 'validated'"/>
+
+                <field name="state" widget="statusbar" statusbar_visible="draft,review,validated,posted" />
+
+            </header>
+                <sheet>
+                    <h1>
+                        <field name="name"/>
+                    </h1>
+                    <group col="2">
+                        <group>
+                            <field name="pos_source_id"/>
+                            <field name="start_date"/>
+                            <field name="end_date"/>
+                            <field name="sale_order_id"/>
+                           <field name="pricelist_id" invisible="1"/>
+                           <field name="currency_id" invisible="1"/>
+                           <field name="currency_company_id" invisible="1"/>
+
+                        </group>
+                            <group>
+                                <group string="Sales Summary">
+                                    <field name="total_sales"/>
+                                    <field name="exchange_avg_rate"/>
+                                    <field name="total_sales_base"/>
+
+<!--                                    <field name="grand_total" class="text-bold"/>-->
+                                </group>
+
+                                <group string="Cost &amp; Margin">
+                                    <field name="total_cost"/>
+                                    <field name="total_margin_value"/>
+                                    <field name="margin_pct"/>
+                                    <field name="flagged_line_count"/>
+                                    <field name="source_line_count" invisible="1"/>
+                                    <field name="transaction_count" invisible="1"/>
+                                </group>
+                            </group>
+                    </group>
+                    <notebook>
+                        <page string="Sales line">
+                            <field name="line_ids">
+                        <list>
+                            <field name="external_code" string="Ext.Code"/>
+                            <field name="product_name" string="Ext.Product Name"/>
+                            <field name="product_id" string="Product"/>
+                            <field name="quantity" string="Qty"/>
+                            <field name="avg_price" string="Avg.Price"/>
+                            <field name="sales_value"/>
+                            <field name="sales_value_in_currency" optional="hide"/>
+                            <field name="cost_value" string="Cost"/>
+                            <field name="margin_value" optional="hide"/>
+                            <field name="margin_pct"/>
+<!--                            <field name="flag"/>-->
+                        </list>
+                    </field>
+                        </page>
+                    </notebook>
+
+
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+</odoo>

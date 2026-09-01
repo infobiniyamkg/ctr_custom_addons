@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- ========================================================= -->
+    <!-- list View -->
+    <!-- ========================================================= -->
+    <record id="view_bk_sales_order_line_list" model="ir.ui.view">
+        <field name="name">bk.sales.order.line.list</field>
+        <field name="model">bk.sales.order.line</field>
+        <field name="arch" type="xml">
+            <list string="Sales Lines" default_order="date desc" multi_edit="1">
+                <field name="date" string="Date"/>
+                <field name="order_id" optional="hide"/>
+                <field name="transaction_id" optional="hide"/>
+                <field name="pos_source_id" optional="hide"/>
+                <field name="fs_number" string="FS#" optional="hide"/>
+                <field name="external_code" string="Ext.Code"/>
+                <field name="shift_number" optional="hide"/>
+                <field name="device_name" optional="hide"/>
+                <field name="external_name" string="Exc. Name"/>
+                <field name="product_id"/>
+                <field name="customer_name" optional="hide"/>
+                <field name="sold_qty" />
+<!--                sum="Total Qty"/>-->
+                <field name="unit_price"/>
+                <field name="amount_in_currency"/>
+                <field name="net_sales_value"/>
+                <field name="net_sales_value_in_currency"/>
+<!--                sum="Net Sales"/>-->
+                <field name="current_cost" optional="hide"/>
+                <field name="total_cost"/>
+                <field name="margin_value" optional="hide"/>
+                <field name="margin_pct"/>
+
+                <field name="flag"
+                       widget="badge"
+                       decoration-success="flag == 'ok'"
+                       decoration-danger="flag == 'negative_margin'"
+                       decoration-warning="flag == 'low_margin'"
+                       decoration-info="flag == 'product_missing'"
+                       decoration-primary="flag == 'price_anomaly'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ========================================================= -->
+    <!-- Search View -->
+    <!-- ========================================================= -->
+    <record id="view_bk_sales_order_line_search" model="ir.ui.view">
+        <field name="name">bk.sales.order.line.search</field>
+        <field name="model">bk.sales.order.line</field>
+        <field name="arch" type="xml">
+            <search string="Sales Lines">
+                <field name="date"/>
+                <field name="product_id"/>
+                <field name="customer_name"/>
+                <field name="external_code"/>
+                <field name="order_id"/>
+                <field name="pos_source_id"/>
+                <field name="flag"/>
+
+                <filter string="Today"
+                        name="today"
+                        domain="[('date','=',context_today())]"/>
+
+                <filter string="Negative Margin"
+                        name="negative_margin"
+                        domain="[('flag','=','negative_margin')]"/>
+
+                <filter string="Low Margin"
+                        name="low_margin"
+                        domain="[('flag','=','low_margin')]"/>
+
+                <filter string="Missing Product"
+                        name="missing_product"
+                        domain="[('flag','=','product_missing')]"/>
+
+                <separator/>
+
+                <group>
+
+                    <filter string="Date" name="date"
+                            context="{'group_by':'date'}"/>
+
+                    <filter string="Product" name="product_id"
+                            context="{'group_by':'product_id'}"/>
+<!---->
+                    <filter string="Customer" name="customer_name"
+                            context="{'group_by':'customer_name'}"/>
+<!---->
+                    <filter string="POS Source" name="pos_source_id"
+                            context="{'group_by':'pos_source_id'}"/>
+<!---->
+                    <filter string="Sales Batch" name="order_id"
+                            context="{'group_by':'order_id'}"/>
+<!---->
+                    <filter string="Flag" name="flag"
+                            context="{'group_by':'flag'}"/>
+
+                </group>
+
+            </search>
+        </field>
+    </record>
+
+    <!-- ========================================================= -->
+    <!-- Pivot View -->
+    <!-- ========================================================= -->
+    <record id="view_bk_sales_order_line_pivot" model="ir.ui.view">
+        <field name="name">bk.sales.order.line.pivot</field>
+        <field name="model">bk.sales.order.line</field>
+        <field name="arch" type="xml">
+            <pivot string="Sales Analysis">
+
+                <field name="date" type="row" interval="month"/>
+                <field name="product_id" type="row"/>
+                <field name="sold_qty" type="measure"/>
+                <field name="net_sales_value" type="measure"/>
+                <field name="total_cost" type="measure"/>
+                <field name="current_cost" type="measure"/>
+                <field name="margin_value" type="measure"/>
+                <field name="margin_pct" type="measure"/>
+
+
+            </pivot>
+        </field>
+    </record>
+        <record id="view_bk_sales_order_line_graph" model="ir.ui.view">
+            <field name="name">bk.sales.order.line.graph</field>
+            <field name="model">bk.sales.order.line</field>
+            <field name="arch" type="xml">
+                <graph string="Sales Analysis" type="bar">
+                    <field name="date" interval="month"/>
+                    <field name="net_sales_value" type="measure"/>
+                    <field name="margin_value" type="measure"/>
+                </graph>
+            </field>
+        </record>
+    <!-- ========================================================= -->
+    <!-- Action -->
+    <!-- ========================================================= -->
+    <record id="action_bk_sales_order_line" model="ir.actions.act_window">
+        <field name="name">Sales Line</field>
+        <field name="res_model">bk.sales.order.line</field>
+        <field name="view_mode">list,pivot,graph</field>
+        <field name="search_view_id" ref="view_bk_sales_order_line_search"/>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Sales Lines
+            </p>
+            <p>
+                Review imported POS sales lines, margins, taxes and costs.
+            </p>
+        </field>
+    </record>
+
+
+
+</odoo>

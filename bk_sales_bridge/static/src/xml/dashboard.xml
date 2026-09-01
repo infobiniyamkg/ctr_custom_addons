@@ -1,0 +1,989 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="bk_sales_bridge.dashboard">
+
+        <div class="bk-dashboard-container">
+
+            <!-- =========================================================
+                 HEADER
+            ========================================================== -->
+
+            <div class="dashboard-header">
+
+                <h1>
+                    SALES ANALYTICS DASHBOARD
+                </h1>
+
+                <p class="subtitle">
+                    Integration Analytics &amp; Performance Metrics
+                </p>
+
+            </div>
+
+
+            <!-- =========================================================
+                 FILTERS
+            ========================================================== -->
+
+            <div class="filters-section">
+
+                <div class="filter-group">
+
+                    <label>
+                        Start Date:
+                    </label>
+
+                    <input
+                        type="date"
+                        class="form-control"
+                        t-att-value="state.startDate"
+                        t-on-change="onStartDateChange"
+                    />
+
+                </div>
+
+
+                <div class="filter-group">
+
+                    <label>
+                        End Date:
+                    </label>
+
+                    <input
+                        type="date"
+                        class="form-control"
+                        t-att-value="state.endDate"
+                        t-on-change="onEndDateChange"
+                    />
+
+                </div>
+
+
+                <div class="filter-group">
+
+                    <label>
+                        POS Outlet:
+                    </label>
+
+                    <select
+                        class="form-control"
+                        t-att-value="state.posSourceId"
+                        t-on-change="onPosSourceChange"
+                    >
+
+                        <option value="">
+                            All Outlets
+                        </option>
+
+                        <t
+                            t-foreach="state.filters.pos_sources"
+                            t-as="source"
+                            t-key="source.id"
+                        >
+
+                            <option
+                                t-att-value="source.id"
+                                t-esc="source.name"
+                            />
+
+                        </t>
+
+                    </select>
+
+                </div>
+
+
+                <div class="filter-group">
+
+                    <label>
+                        Category:
+                    </label>
+
+                    <select
+                        class="form-control"
+                        t-att-value="state.productCategory"
+                        t-on-change="onCategoryChange"
+                    >
+
+                        <option value="">
+                            All Categories
+                        </option>
+
+                        <t
+                            t-foreach="state.filters.categories"
+                            t-as="category"
+                            t-key="category.id"
+                        >
+
+                            <option
+                                t-att-value="category.id"
+                                t-esc="category.name"
+                            />
+
+                        </t>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <!-- =========================================================
+                 ERROR
+            ========================================================== -->
+
+            <t t-if="state.error">
+
+                <div class="alert alert-danger">
+                    <i class="fa fa-exclamation-triangle"/>
+                    <span t-esc="state.error"/>
+                </div>
+
+            </t>
+
+
+            <!-- =========================================================
+                 LOADING
+            ========================================================== -->
+
+            <t t-if="state.loading">
+
+                <div class="loading-overlay">
+
+                    <div class="spinner"/>
+
+                    <p>
+                        Loading dashboard data...
+                    </p>
+
+                </div>
+
+            </t>
+
+
+            <!-- =========================================================
+                 DASHBOARD CONTENT
+            ========================================================== -->
+
+            <t t-if="!state.loading">
+
+                <!-- =====================================================
+                     KPI CARDS
+                ====================================================== -->
+
+                <div class="kpi-section">
+
+                    <!-- Total Sales -->
+
+                    <div class="kpi-card kpi-primary">
+
+                        <div class="kpi-icon">
+                            <i
+                                class="fa fa-money"
+                                aria-hidden="true"
+                            />
+                        </div>
+
+                        <div class="kpi-content">
+
+                            <div class="kpi-label">
+                                Total Sales
+                            </div>
+
+                            <div
+                                class="kpi-value"
+                                t-esc="formatCurrency(
+                                    state.kpis.total_sales
+                                )"
+                            />
+
+                            <div class="kpi-subtitle">
+                                Revenue
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Total Margin -->
+
+                    <div class="kpi-card kpi-success">
+
+                        <div class="kpi-icon">
+                            <i
+                                class="fa fa-line-chart"
+                                aria-hidden="true"
+                            />
+                        </div>
+
+                        <div class="kpi-content">
+
+                            <div class="kpi-label">
+                                Total Margin
+                            </div>
+
+                            <div
+                                class="kpi-value"
+                                t-esc="formatCurrency(
+                                    state.kpis.total_margin
+                                )"
+                            />
+
+                            <div
+                                class="kpi-subtitle kpi-positive"
+                                t-esc="(
+                                    state.kpis.margin_pct || 0
+                                ) + '%'"
+                            />
+
+                            <div class="kpi-subtitle">
+                                margin
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Items Sold -->
+
+                    <div class="kpi-card kpi-info">
+
+                        <div class="kpi-icon">
+                            <i
+                                class="fa fa-cubes"
+                                aria-hidden="true"
+                            />
+                        </div>
+
+                        <div class="kpi-content">
+
+                            <div class="kpi-label">
+                                Items Sold
+                            </div>
+
+                            <div
+                                class="kpi-value"
+                                t-esc="formatNumber(
+                                    state.kpis.total_qty
+                                )"
+                            />
+
+                            <div
+                                class="kpi-subtitle"
+                                t-esc="'Avg: ' +
+                                    formatCurrency(
+                                        state.kpis.avg_selling_price
+                                    )"
+                            />
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Flagged Items -->
+
+                    <div
+                        class="kpi-card kpi-warning"
+                        t-if="state.kpis.flagged_items > 0"
+                    >
+
+                        <div class="kpi-icon">
+
+                            <i
+                                class="fa fa-exclamation-triangle"
+                                aria-hidden="true"
+                            />
+
+                        </div>
+
+                        <div class="kpi-content">
+
+                            <div class="kpi-label">
+                                Flagged Items
+                            </div>
+
+                            <div
+                                class="kpi-value"
+                                t-esc="formatNumber(
+                                    state.kpis.flagged_items
+                                )"
+                            />
+
+                            <div class="kpi-subtitle kpi-warning-text">
+
+                                <i
+                                    class="fa fa-shield"
+                                    aria-hidden="true"
+                                />
+
+                                <t
+                                    t-esc="(
+                                        state.kpis.quality_score || 0
+                                    ) + '%'"
+                                />
+
+                                quality
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Average Margin -->
+
+                    <div class="kpi-card kpi-neutral">
+
+                        <div class="kpi-icon">
+
+                            <i
+                                class="fa fa-percent"
+                                aria-hidden="true"
+                            />
+
+                        </div>
+
+                        <div class="kpi-content">
+
+                            <div class="kpi-label">
+                                Avg Margin
+                            </div>
+
+                            <div
+                                class="kpi-value"
+                                t-esc="(
+                                    state.kpis.avg_margin_pct || 0
+                                ) + '%'"
+                            />
+
+                            <div class="kpi-subtitle">
+                                Average profitability
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Quality Score -->
+
+                    <div class="kpi-card kpi-accent">
+
+                        <div class="kpi-icon">
+
+                            <i
+                                class="fa fa-shield"
+                                aria-hidden="true"
+                            />
+
+                        </div>
+
+                        <div class="kpi-content">
+
+                            <div class="kpi-label">
+                                Quality Score
+                            </div>
+
+                            <div
+                                class="kpi-value"
+                                t-esc="(
+                                    state.kpis.quality_score || 0
+                                ) + '%'"
+                            />
+
+                            <div class="kpi-subtitle">
+                                POS data health
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =====================================================
+                     CHARTS
+                ====================================================== -->
+
+                <div class="charts-section">
+
+
+                    <!-- =================================================
+                         ROW 1
+                    ================================================== -->
+
+                    <div class="chart-row">
+
+
+                        <!-- Sales Trend -->
+
+                        <div class="chart-container chart-half">
+
+                            <div class="chart-header">
+
+                                <div class="chart-title">
+
+                                    <span
+                                        class="chart-title-icon chart-icon-primary"
+                                    >
+
+                                        <i
+                                            class="fa fa-line-chart"
+                                            aria-hidden="true"
+                                        />
+
+                                    </span>
+
+                                    <div>
+
+                                        <div class="chart-title-main">
+                                            Sales Trend
+                                        </div>
+
+                                        <div class="chart-title-sub">
+                                            Daily sales performance
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                                <span class="chart-period">
+                                    30 Days
+                                </span>
+
+                            </div>
+
+                            <div class="chart-body">
+
+                                <canvas
+                                    id="salesTrendChart"
+                                />
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- Margin by Outlet -->
+
+                        <div class="chart-container chart-half">
+
+                            <div class="chart-header">
+
+                                <div class="chart-title">
+
+                                    <span
+                                        class="chart-title-icon chart-icon-success"
+                                    >
+
+                                        <i
+                                            class="fa fa-building"
+                                            aria-hidden="true"
+                                        />
+
+                                    </span>
+
+                                    <div>
+
+                                        <div class="chart-title-main">
+                                            Margin by Outlet
+                                        </div>
+
+                                        <div class="chart-title-sub">
+                                            Outlet profitability
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <div class="chart-body">
+
+                                <canvas
+                                    id="marginByOutletChart"
+                                />
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         ROW 2
+                    ================================================== -->
+
+                    <div class="chart-row">
+
+
+                        <!-- Quality Flags -->
+
+                        <div class="chart-container chart-half">
+
+                            <div class="chart-header">
+
+                                <div class="chart-title">
+
+                                    <span
+                                        class="chart-title-icon chart-icon-warning"
+                                    >
+
+                                        <i
+                                            class="fa fa-flag"
+                                            aria-hidden="true"
+                                        />
+
+                                    </span>
+
+                                    <div>
+
+                                        <div class="chart-title-main">
+                                            Quality Flags
+                                        </div>
+
+                                        <div class="chart-title-sub">
+                                            Data quality distribution
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <div class="chart-body chart-body-donut">
+
+                                <canvas
+                                    id="flagDistributionChart"
+                                />
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- Profit vs Loss -->
+
+                        <div class="chart-container chart-half">
+
+                            <div class="chart-header">
+
+                                <div class="chart-title">
+
+                                    <span
+                                        class="chart-title-icon chart-icon-danger"
+                                    >
+
+                                        <i
+                                            class="fa fa-balance-scale"
+                                            aria-hidden="true"
+                                        />
+
+                                    </span>
+
+                                    <div>
+
+                                        <div class="chart-title-main">
+                                            Profit vs Loss
+                                        </div>
+
+                                        <div class="chart-title-sub">
+                                            Sales profitability analysis
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <div class="chart-body chart-body-donut">
+
+                                <canvas
+                                    id="profitLossChart"
+                                />
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         CATEGORY PERFORMANCE
+                    ================================================== -->
+
+                    <div class="chart-container chart-full">
+
+                        <div class="chart-header">
+
+                            <div class="chart-title">
+
+                                <span
+                                    class="chart-title-icon chart-icon-info"
+                                >
+
+                                    <i
+                                        class="fa fa-tags"
+                                        aria-hidden="true"
+                                    />
+
+                                </span>
+
+                                <div>
+
+                                    <div class="chart-title-main">
+                                        Category Performance
+                                    </div>
+
+                                    <div class="chart-title-sub">
+                                        Sales and margin by product category
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="chart-body chart-body-wide">
+
+                            <canvas
+                                id="categoryPerformanceChart"
+                            />
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         LOW MARGIN ITEMS
+                    ================================================== -->
+
+                    <div class="chart-row">
+
+                        <div
+                            class="chart-container chart-full chart-alert"
+                        >
+
+                            <div class="chart-header">
+
+                                <div class="chart-title">
+
+                                    <span
+                                        class="chart-title-icon chart-icon-danger"
+                                    >
+
+                                        <i
+                                            class="fa fa-exclamation-triangle"
+                                            aria-hidden="true"
+                                        />
+
+                                    </span>
+
+                                    <div>
+
+                                        <div class="chart-title-main">
+                                            Low Margin Items
+                                        </div>
+
+                                        <div class="chart-title-sub">
+                                            Products below 30% margin
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                                <span class="chart-alert-badge">
+                                    Below 30%
+                                </span>
+
+                            </div>
+
+                            <div class="chart-body chart-body-wide">
+
+                                <canvas
+                                    id="lowMarginChart"
+                                />
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =====================================================
+                     TABLES
+                ====================================================== -->
+
+                <div class="tables-section">
+
+
+                    <!-- =================================================
+                         HIGH MOVERS
+                    ================================================== -->
+
+                    <div class="table-container">
+
+                        <div class="table-header">
+
+                            <i class="fa fa-rocket text-success"/>
+
+                            <span>
+                                Top 10 Fast Moving Products
+                            </span>
+
+                        </div>
+
+                        <div class="table-scroll">
+
+                            <table class="data-table">
+
+                                <thead>
+
+                                    <tr>
+
+                                        <th>#</th>
+                                        <th>Product Name</th>
+                                        <th>Qty Sold</th>
+                                        <th>Total Sales</th>
+                                        <th>Total Cost</th>
+                                        <th>Margin</th>
+                                        <th>Margin %</th>
+
+                                    </tr>
+
+                                </thead>
+
+                                <tbody>
+
+                                    <t
+                                        t-foreach="state.tables.high_movers || []"
+                                        t-as="item"
+                                        t-key="item.product_id"
+                                    >
+
+                                        <tr>
+
+                                            <td
+                                                class="row-number"
+                                                t-esc="item_index + 1"
+                                            />
+
+                                            <td
+                                                class="product-name"
+                                                t-esc="item.product"
+                                            />
+
+                                            <td
+                                                class="text-center"
+                                                t-esc="formatNumber(item.qty)"
+                                            />
+
+                                            <td
+                                                class="text-right"
+                                                t-esc="formatCurrency(item.sales)"
+                                            />
+
+                                            <td
+                                                class="text-right"
+                                                t-esc="formatCurrency(item.cost)"
+                                            />
+
+                                            <td
+                                                class="text-right"
+                                                t-esc="formatCurrency(item.margin)"
+                                            />
+
+                                            <td class="text-center">
+
+                                                <span
+                                                    class="badge badge-success"
+                                                    t-esc="(
+                                                        item.margin_pct || 0
+                                                    ) + '%'"
+                                                />
+
+                                            </td>
+
+                                        </tr>
+
+                                    </t>
+
+
+                                    <t
+                                        t-if="
+                                            !state.tables.high_movers ||
+                                            state.tables.high_movers.length === 0
+                                        "
+                                    >
+
+                                        <tr>
+
+                                            <td
+                                                colspan="7"
+                                                class="text-center text-muted"
+                                            >
+                                                No data available
+                                            </td>
+
+                                        </tr>
+
+                                    </t>
+
+                                </tbody>
+
+                            </table>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         SLOW MOVERS
+                    ================================================== -->
+
+                    <div class="table-container">
+
+                        <div class="table-header">
+
+                            <i class="fa fa-pause-circle text-warning"/>
+
+                            <span>
+                                Top 10 Slow Moving Products
+                            </span>
+
+                        </div>
+
+                        <div class="table-scroll">
+
+                            <table class="data-table">
+
+                                <thead>
+
+                                    <tr>
+
+                                        <th>#</th>
+                                        <th>Product Name</th>
+                                        <th>Qty Sold</th>
+                                        <th>Total Sales</th>
+                                        <th>Total Cost</th>
+                                        <th>Margin</th>
+                                        <th>Margin %</th>
+
+                                    </tr>
+
+                                </thead>
+
+                                <tbody>
+
+                                    <t
+                                        t-foreach="state.tables.slow_movers || []"
+                                        t-as="item"
+                                        t-key="item.product_id"
+                                    >
+
+                                        <tr>
+
+                                            <td
+                                                class="row-number"
+                                                t-esc="slow_index + 1"
+                                            />
+
+                                            <td
+                                                class="product-name"
+                                                t-esc="item.product"
+                                            />
+
+                                            <td
+                                                class="text-center"
+                                                t-esc="formatNumber(item.qty)"
+                                            />
+
+                                            <td
+                                                class="text-right"
+                                                t-esc="formatCurrency(item.sales)"
+                                            />
+
+                                            <td
+                                                class="text-right"
+                                                t-esc="formatCurrency(item.cost)"
+                                            />
+
+                                            <td
+                                                class="text-right"
+                                                t-esc="formatCurrency(item.margin)"
+                                            />
+
+                                            <td class="text-center">
+
+                                                <span
+                                                    class="badge badge-warning"
+                                                    t-esc="(
+                                                        item.margin_pct || 0
+                                                    ) + '%'"
+                                                />
+
+                                            </td>
+
+                                        </tr>
+
+                                    </t>
+
+
+                                    <t
+                                        t-if="
+                                            !state.tables.slow_movers ||
+                                            state.tables.slow_movers.length === 0
+                                        "
+                                    >
+
+                                        <tr>
+
+                                            <td
+                                                colspan="7"
+                                                class="text-center text-muted"
+                                            >
+                                                No data available
+                                            </td>
+
+                                        </tr>
+
+                                    </t>
+
+                                </tbody>
+
+                            </table>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </t>
+
+        </div>
+
+    </t>
+
+</templates>
+

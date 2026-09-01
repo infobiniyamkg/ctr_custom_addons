@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ACTION: Product mapping list -->
+    <record id="action_bk_pos_product_map_list" model="ir.actions.act_window">
+        <field name="name">Product Mapping</field>
+        <field name="res_model">bk.pos.product.map</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- NOTE: Add list and form view definitions here -->
+
+    <record id="view_bk_pos_product_map_list" model="ir.ui.view">
+        <field name="name">Product Mapping - list</field>
+        <field name="model">bk.pos.product.map</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="pos_source_id"/>
+                <field name="external_code"/>
+                <field name="external_name"/>
+                <field name="product_id"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_bk_pos_product_map_form" model="ir.ui.view">
+        <field name="name">Product Mapping - Form</field>
+        <field name="model">bk.pos.product.map</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="pos_source_id"/>
+                        <field name="external_code"/>
+                        <field name="external_name"/>
+                        <field name="product_id"/>
+                        <field name="active"/>
+                        <field name="notes"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+</odoo>

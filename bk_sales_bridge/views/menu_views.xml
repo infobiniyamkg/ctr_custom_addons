@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Root menu -->
+    <menuitem id="menu_bk_sales_bridge_root" name="POS Bridge" sequence="100"/>
+
+    <!-- Sales Import submenu -->
+    <menuitem id="menu_bk_sales_import" name="Sales Import"
+              parent="menu_bk_sales_bridge_root" sequence="10"/>
+    
+    <menuitem id="menu_bk_sales_order_import" name="Sales Batches"
+              parent="menu_bk_sales_import" sequence="10"
+              action="action_bk_sales_order_list"/>
+
+    <menuitem  id="menu_bk_sales_order_transaction"   name="Sales Transaction"
+               parent="menu_bk_sales_import"
+               sequence="12"
+               action="action_bk_bk_sales_transaction"/>
+
+    <menuitem  id="menu_bk_sales_order_line"   name="Sales Line"
+               parent="menu_bk_sales_import"
+               sequence="12"
+               action="action_bk_sales_order_line"/>
+
+    <menuitem id="menu_bk_pos_product_map" name="Product Mapping"
+              parent="menu_bk_sales_import" sequence="20"
+              action="action_bk_pos_product_map_list"/>
+
+    <!-- Configuration submenu -->
+    <menuitem id="menu_bk_config" name="Configuration"
+              parent="menu_bk_sales_bridge_root" sequence="100"/>
+    
+    <menuitem id="menu_bk_pos_source" name="POS Outlets / Sources"
+              parent="menu_bk_config" sequence="10"
+              action="action_bk_pos_source_list"/>
+
+
+
+    <!-- Client Action -->
+    <record id="bk_sales_bridge_dashboard_action" model="ir.actions.client">
+        <field name="name">Sales Bridge Dashboard</field>
+        <field name="tag">bk_sales_bridge.dashboard</field>
+    </record>
+
+
+<!--    &lt;!&ndash; Dashboard Menu &ndash;&gt;-->
+<!--    <menuitem-->
+<!--        id="bk_sales_bridge_dashboard_menu"-->
+<!--        name="Dashboard"-->
+<!--        parent="menu_bk_sales_bridge_root"-->
+<!--        action="bk_sales_bridge_dashboard_action"-->
+<!--         groups="bk_sales_bridge.group_bk_sales_manager"-->
+<!--        sequence="1"-->
+<!--    />-->
+
+
+</odoo>
