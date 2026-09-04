@@ -147,6 +147,8 @@ class BkSalesOrder(models.Model):
                 ('date', '<=', order.end_date),
                 ('transaction_id.sales_type', '=', 'sales')
             ])
+            print(f"source_lines: {source_lines}")
+            print(f"len: {len(source_lines)}")
 
             if not source_lines:
                 raise UserError(_(
@@ -166,12 +168,10 @@ class BkSalesOrder(models.Model):
 
             for line in source_lines:
                 transaction = line.transaction_id
-
                 if not transaction:
                     continue
 
                 sales_type = transaction.sales_type
-
                 if sales_type == 'void':
                     continue
 
@@ -256,7 +256,7 @@ class BkSalesOrder(models.Model):
                     'transaction_count': len(data['transaction_ids']),
                     'source_line_count': data['source_line_count'],
                 })
-
+            print(f"summary_values: {summary_values}")
             if summary_values:
                 SummaryLine.create(summary_values)
 
@@ -270,7 +270,7 @@ class BkSalesOrder(models.Model):
             # Move batch to Review.
             # -------------------------------------------------------------
             order.write({'state': 'review',})
-
+        #
         return True
 
     # =========================================================================

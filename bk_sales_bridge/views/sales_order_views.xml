@@ -56,7 +56,7 @@
                 <button
                     name="action_reset_to_review"
                     type="object" string="Reset to Review"
-                    class="btn-secondary"  invisible="state != 'validated'"/>
+                    class="btn-secondary" invisible="state != 'validated'"/>
 
                 <!-- Post -->
                 <button

@@ -9,7 +9,7 @@ class BkSalesOrderLine(models.Model):
 
     transaction_id = fields.Many2one('bk.sales.transaction', string="Sales Transaction",
                                      required=True, ondelete='cascade')
-    order_id = fields.Many2one('bk.sales.order', ondelete='restrict', readonly=True)
+    order_id = fields.Many2one('bk.sales.order', ondelete='restrict', readonly=False)
     pos_source_id = fields.Many2one(related='transaction_id.pos_source_id', store=True, index=True,
                                     string='POS Source', )
 

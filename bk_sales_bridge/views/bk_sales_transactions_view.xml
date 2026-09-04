@@ -85,7 +85,7 @@
         <field name="model">bk.sales.transaction</field>
         <field name="arch" type="xml">
             <list string="Transaction Lines" default_order="issued_datetime desc">
-                <field name="issued_datetime" string="Date"/>
+                <field name="date" string="Date"/>
                 <field name="external_ref" string="Ref#"/>
                 <field name="batch_id" optional="hide"/>
                 <field name="pos_source_id"/>

@@ -4959,7 +4959,6 @@ def generate_sale_price_usd(price_birr, exchange_rate):
 # ============================================================
 
 def create_transaction(transaction_data):
-
     url = (
         f"{ODOO_URL}"
         f"/json/2/bk.sales.transaction/create"
@@ -4968,38 +4967,16 @@ def create_transaction(transaction_data):
     response = requests.post(
         url,
         headers=HEADERS,
-        json={
-            "vals_list": [
-                transaction_data
-            ]
-        },
+        json={ "vals_list": [transaction_data ] },
         timeout=30,
     )
-
     response.raise_for_status()
-
     result = response.json()
 
-    # Odoo JSON-2 create normally returns IDs.
-    #
-    # Depending on your endpoint response, it may be:
-    #
-    # [123]
-    #
-    # or:
-    #
-    # 123
-    #
-
     if isinstance(result, list):
-
         if not result:
-            raise Exception(
-                "Odoo returned an empty ID list."
-            )
-
+            raise Exception("Odoo returned an empty ID list.")
         return result[0]
-
     return result
 
 
@@ -5015,13 +4992,7 @@ def create_sales_line(transaction_id, line_data):
     )
 
     values = dict(line_data)
-
-    # IMPORTANT:
-    #
-    # This connects the line to the transaction.
-    #
     values["transaction_id"] = transaction_id
-
     response = requests.post(
         url,
         headers=HEADERS,
@@ -5034,67 +5005,28 @@ def create_sales_line(transaction_id, line_data):
     )
 
     response.raise_for_status()
-
     result = response.json()
 
     if isinstance(result, list):
-
         if not result:
-            raise Exception(
-                "Odoo returned an empty sales-line ID list."
-            )
-
+            raise Exception("Odoo returned an empty sales-line ID list." )
         return result[0]
-
     return result
-
-
-# ============================================================
-# 7. BUILD ONE TRANSACTION
-# ============================================================
 
 def build_transaction(transaction_number):
 
-    transaction_ref = (
-        f"POS-LOAD-{transaction_number:06d}"
-    )
+    transaction_ref = ( f"POS-LOAD-{transaction_number:06d}")
 
     # Each transaction gets a random exchange rate.
-    exchange_rate = round(
-        random.uniform(
-            MIN_USD_ETB_RATE,
-            MAX_USD_ETB_RATE,
-        ),
-        2,
-    )
+    exchange_rate = round( random.uniform( MIN_USD_ETB_RATE, MAX_USD_ETB_RATE, ), 2,)
+    issued_datetime = (  START_DATE + timedelta( minutes=transaction_number * 3 ) )
+    sale_date = issued_datetime.strftime("%Y-%m-%d")
 
-    issued_datetime = (
-        START_DATE
-        + timedelta(
-            minutes=transaction_number * 3
-        )
-    )
-
-    sale_date = issued_datetime.strftime(
-        "%Y-%m-%d"
-    )
-
-    issued_string = issued_datetime.strftime(
-        "%Y-%m-%d %H:%M:%S"
-    )
+    issued_string = issued_datetime.strftime( "%Y-%m-%d %H:%M:%S")
 
     # Number of lines for THIS transaction.
-    number_of_lines = random.randint(
-        MIN_LINES_PER_TRANSACTION,
-        MAX_LINES_PER_TRANSACTION,
-    )
-
-    # Make sure we do not select the same product twice
-    # inside one transaction.
-    selected_products = random.sample(
-        PRODUCTS,
-        number_of_lines,
-    )
+    number_of_lines = random.randint( MIN_LINES_PER_TRANSACTION,   MAX_LINES_PER_TRANSACTION, )
+    selected_products = random.sample(PRODUCTS,  number_of_lines,)
 
     lines = []
 
@@ -5104,23 +5036,12 @@ def build_transaction(transaction_number):
     # Build individual lines first.
     # --------------------------------------------------------
 
-    for line_number, product in enumerate(
-        selected_products,
-        start=1,
-    ):
-
+    for line_number, product in enumerate(selected_products, start=1):
         quantity = generate_quantity()
-
-        external_code = generate_external_code(
-            product,
-            transaction_number,
-            line_number,
-        )
+        external_code = generate_external_code( product,  transaction_number,  line_number, )
 
         unit_price_usd = generate_sale_price_usd(
-            product["price_birr"],
-            exchange_rate,
-        )
+            product["price_birr"],  exchange_rate,)
 
         line_total = (
             unit_price_usd
@@ -5134,9 +5055,7 @@ def build_transaction(transaction_number):
                 "external_code": external_code,
                 "external_name": product["name"],
                 "date": sale_date,
-
                 "sold_qty": quantity,
-
                 "unit_price": unit_price_usd,
 
             }

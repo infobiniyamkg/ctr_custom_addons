@@ -9,7 +9,7 @@ class BkSalesTransaction(models.Model):
 
     name = fields.Char(string='Reference', compute='_compute_name', store=True, )
     batch_id = fields.Many2one('bk.sales.order',  string='Import Batch', ondelete='cascade', index=True)
-    pos_source_id = fields.Many2one('bk.pos.source', store=True, index=True, string='POS Source',)
+    pos_source_id = fields.Many2one('bk.pos.source', index=True, required=True, string='POS Source',)
 
     external_ref = fields.Char(string='POS Transaction Ref', required=True, index=True,
                                help='Transaction reference/code returned by the POS.',)
