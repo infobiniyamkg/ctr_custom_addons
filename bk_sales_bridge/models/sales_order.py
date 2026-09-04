@@ -117,16 +117,6 @@ class BkSalesOrder(models.Model):
     # =========================================================================
 
     def action_generate_summary(self):
-        """
-        Fetch unconsumed bk.sales.order.line records and summarize them.
-        IMPORTANT:
-        A source line is considered available when:
-            order_id = False
-        Once processed, we set:
-            order_id = current batch
-        Therefore the same source line cannot be picked by another batch.
-        """
-
         for order in self:
             if order.state not in ('draft', 'review'):
                 raise UserError(_('Summary can only be generated while the batch '

@@ -20,9 +20,9 @@ class BkSalesTransaction(models.Model):
     user_name = fields.Char(string='User', )
     customer_name = fields.Char(string='Customer')
 
-    date = fields.Date(string='Date',index=True)
+    date = fields.Date(string='Date', required=True, index=True)
 
-    subtotal = fields.Float(string='Subtotal',)
+    subtotal = fields.Float(string='Subtotal')
     grand_total = fields.Float(string='Grand Total')
 
     tax_total = fields.Float(string='Tax Total',)

@@ -3,7 +3,7 @@
     'version': '1.0.0',
     'category': 'Sales',
     'summary': 'POS-to-Odoo middleware',
-    'description': """POS Integraiton with CNET    """,
+    'description': """POS Integraiton with Maraki """,
     'author': 'Biniyam K|info.biniyamkg@gmail.com',
 
     'depends': ['base', 'sale_management', 'stock', 'account'],

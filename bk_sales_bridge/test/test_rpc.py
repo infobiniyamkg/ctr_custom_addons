@@ -3,22 +3,12 @@ import random
 from datetime import datetime, timedelta
 
 
-# ============================================================
-# 1. ODOO CONNECTION / HEADER
-# ============================================================
-#
-# KEEP THIS SECTION SEPARATE.
-#
-# Change only this section when you move to another database
-# or API key.
-#
-# ============================================================
-
-ODOO_URL = "http://localhost:8019"
-ODOO_DB = "test_pro_08152026"
+ODOO_URL = "http://localhost:8019/"
+ODOO_DB = "marki_test_odoo"
+#_08152026"
 
 # TEST ONLY
-ODOO_API_KEY = "81f4144e12ca31ebfe80ce5d204890d0ffdf50f3"
+ODOO_API_KEY = "f5b3c807e9412e0e9cd7ba40d3909654652c10ea"#"81f4144e12ca31ebfe80ce5d204890d0ffdf50f3"
 
 HEADERS = {
     "Authorization": f"bearer {ODOO_API_KEY}",
@@ -27,7 +17,7 @@ HEADERS = {
     "User-Agent": "external-pos-load-test/1.0",
 }
 
-NUMBER_OF_TRANSACTIONS = 800
+NUMBER_OF_TRANSACTIONS = 1#800
 
 # Each transaction will contain between these many lines.
 MIN_LINES_PER_TRANSACTION = 1
@@ -5141,17 +5131,8 @@ def build_transaction(transaction_number):
 
         lines.append(
             {
-                # "external_line_ref": (
-                #     f"{transaction_ref}-LINE-{line_number:03d}"
-                # ),
-
-                # Usually exact real code.
-                # Some are deliberately modified.
                 "external_code": external_code,
-
-                # ALWAYS keep the actual product name.
                 "external_name": product["name"],
-
                 "date": sale_date,
 
                 "sold_qty": quantity,
@@ -5160,10 +5141,6 @@ def build_transaction(transaction_number):
 
             }
         )
-
-    # --------------------------------------------------------
-    # For test purposes use a simple 15% tax.
-    # --------------------------------------------------------
 
     tax_total = round(
         subtotal * 0.15,
@@ -5191,7 +5168,7 @@ def build_transaction(transaction_number):
             f"SHIFT-{random.randint(1, 20):03d}"
         ),
 
-        "issued_datetime": issued_string,
+        # "issued_datetime": issued_string,
 
         "user_name": random.choice(
             [

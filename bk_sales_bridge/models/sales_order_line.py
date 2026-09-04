@@ -19,7 +19,7 @@ class BkSalesOrderLine(models.Model):
     device_name = fields.Char(related='transaction_id.device_name', store=True, string='Device Name')
     shift_number = fields.Char(related='transaction_id.shift_number', store=True, string='Shift',)
     fs_number = fields.Char(related='transaction_id.fs_number', store=True, string='FS#',)
-    date = fields.Date(string='Sale Date', index=True)
+    date = fields.Date(related='transaction_id.date', string='Sale Date', store=True, index=True)
     customer_name = fields.Char(related='transaction_id.customer_name', store=True,   string='Customer',)
 
     # Resolved Odoo product

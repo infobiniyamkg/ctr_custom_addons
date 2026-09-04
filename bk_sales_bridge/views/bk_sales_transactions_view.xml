@@ -19,8 +19,8 @@
                             <group>
                                 <field name="external_ref"/>
                                 <field name="sales_type"/>
-                                <field name="date" invisible="1"/>
-                                <field name="issued_datetime"/>
+                                <field name="date" />
+                                <field name="issued_datetime" invisible="1"/>
                                 <field name="imported" invisible="1"/>
                                 <field name="pos_source_id"/>
                                 <field name="batch_id" invisible="1"/>
